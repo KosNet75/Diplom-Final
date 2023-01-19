@@ -11,7 +11,7 @@ public class Client {
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 
             String request = "бизнес и план";
-            System.out.println("Поиск в документах словосочетания - 'бизнес и план'");
+            System.out.println("Поиск в документах по словам - 'бизнес и план'");
             out.println(request);
 
             in.lines().forEach(System.out::println);
