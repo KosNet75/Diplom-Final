@@ -8,59 +8,60 @@ import java.net.Socket;
 import java.util.*;
 
 public class Main {
-    private static final int PORT = 8989;
-    private static final ObjectMapper mapper = new ObjectMapper();
-    private static final File textFile = new File("stop-ru.txt");
 
-    public static void main(String[] args) throws Exception {
+  private static final int PORT = 8989;
+  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final File textFile = new File("stop-ru.txt");
 
-        BooleanSearchEngine engine = new BooleanSearchEngine(new File("pdfs"));
+  public static void main(String[] args) throws Exception {
 
-        try (ServerSocket server = new ServerSocket(PORT)) {
-            System.out.println("Server started");
+    BooleanSearchEngine engine = new BooleanSearchEngine(new File("pdfs"));
 
-            while (true) {
-                try (Socket socket = server.accept();
-                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                     PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                     Scanner scanner = new Scanner(textFile)) {
+    try (ServerSocket server = new ServerSocket(PORT)) {
+      System.out.println("Server started");
 
-                    ArrayList<String> wordsList = new ArrayList<>();
-                    Set<String> stopWords = new HashSet<>();
-                    while (scanner.hasNextLine()) {
-                        stopWords.add(scanner.nextLine());
-                    }
+      while (true) {
+        try (Socket socket = server.accept();
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            Scanner scanner = new Scanner(textFile)) {
 
-                    DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
-                    prettyPrinter.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
+          ArrayList<String> wordsList = new ArrayList<>();
+          Set<String> stopWords = new HashSet<>();
+          while (scanner.hasNextLine()) {
+            stopWords.add(scanner.nextLine());
+          }
 
-                    System.out.println("Client connection accepted");
+          DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
+          prettyPrinter.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
 
-                    String[] words = in.readLine().split("\\P{IsAlphabetic}+");
+          System.out.println("Client connection accepted");
 
-                    for (String word : words) {
-                        String wordCompare = word.toLowerCase();
-                        if (!stopWords.contains(wordCompare)) {
-                            wordsList.add(word);
-                        }
+          String[] words = in.readLine().split("\\P{IsAlphabetic}+");
 
-                    }
-
-                    for (String result : wordsList) {
-                        out.println(
-                                mapper
-                                        .writer(prettyPrinter)
-                                        .writeValueAsString(engine.search(result))
-                        );
-                    }
-
-                }
+          for (String word : words) {
+            String wordCompare = word.toLowerCase();
+            if (!stopWords.contains(wordCompare)) {
+              wordsList.add(word);
             }
 
-        } catch (IOException io) {
-            System.out.println("Error. Can't start server.");
-            throw new IOException(io);
-        }
+          }
 
+          for (String result : wordsList) {
+            out.println(
+                mapper
+                    .writer(prettyPrinter)
+                    .writeValueAsString(engine.search(result))
+            );
+          }
+
+        }
+      }
+
+    } catch (IOException io) {
+      System.out.println("Error. Can't start server.");
+      throw new IOException(io);
     }
+
+  }
 }
