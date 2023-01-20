@@ -15,14 +15,6 @@ public class PageEntry implements Comparable<PageEntry> {
     this.count = count;
   }
 
-  protected String getPdfName() {
-    return pdfName;
-  }
-
-  protected int getPage() {
-    return page;
-  }
-
   protected int getCount() {
     return count;
   }
