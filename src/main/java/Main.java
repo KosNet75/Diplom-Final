@@ -21,10 +21,9 @@ public class Main {
       System.out.println("Server started");
 
       while (true) {
-        try (Socket socket = server.accept();
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            Scanner scanner = new Scanner(textFile)) {
+        try (Socket socket = server.accept(); BufferedReader in = new BufferedReader(
+            new InputStreamReader(socket.getInputStream())); PrintWriter out = new PrintWriter(
+            socket.getOutputStream(), true); Scanner scanner = new Scanner(textFile)) {
 
           ArrayList<String> wordsList = new ArrayList<>();
           Set<String> stopWords = new HashSet<>();
@@ -48,11 +47,7 @@ public class Main {
           }
 
           for (String result : wordsList) {
-            out.println(
-                mapper
-                    .writer(prettyPrinter)
-                    .writeValueAsString(engine.search(result))
-            );
+            out.println(mapper.writer(prettyPrinter).writeValueAsString(engine.search(result)));
           }
 
         }
